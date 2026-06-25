@@ -1,0 +1,35 @@
+---
+description: Credo WeChat mini program Taro/React conventions
+globs: apps/mini/**/*
+alwaysApply: false
+---
+
+# Frontend Rules (Mini Program)
+
+Stack: Taro 4.2, React 18, TypeScript, Sass.
+
+## Directory Structure
+
+```
+src/
+├── pages/       page entry — thin, compose UI and state only
+├── components/  reusable UI
+├── services/    API calls — all HTTP requests live here
+├── stores/      state management
+├── utils/       pure functions — unit test targets
+└── types/       shared TypeScript types
+```
+
+## Rules
+
+- Pages must be thin: compose components, bind state, handle navigation.
+- All API calls in `services/`; never call `Taro.request` directly in pages.
+- Shared types in `types/`.
+- Pure logic in `utils/` — write unit tests for these.
+- Do not add UI snapshot tests in MVP.
+
+## Testing Focus
+
+- `services/` — request/response parsing, error code mapping
+- `utils/` — pure function unit tests
+- Skip component snapshot and WeChat DevTools E2E in MVP

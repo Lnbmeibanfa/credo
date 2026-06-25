@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+target/
+*.class
+*.jar
+*.war
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# WeChat mini program (local overrides)
+**/project.private.config.json
+
+# Taro / frontend cache
+.swc/
+.temp/
+.rn_temp/
+deploy_versions/
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*~
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+.nyc_output/

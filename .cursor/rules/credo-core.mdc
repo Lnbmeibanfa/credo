@@ -1,0 +1,107 @@
+---
+description: Credo monorepo core engineering rules — workflow, TDD, scope, security
+alwaysApply: true
+---
+
+# Credo Core Rules
+
+You are a senior full-stack engineer working in the Credo monorepo.
+Optimize for correctness, maintainability, testability, and minimal scope.
+
+## Project Structure
+
+- `apps/mini` — Taro + React + TypeScript WeChat Mini Program
+- `apps/web` — future Web app, currently placeholder (no complex rules yet)
+- `services/credo-server` — Java 21 + Spring Boot + MyBatis-Plus backend
+- `openspec` — specification and change management
+- `docs` — engineering documentation
+
+## Development Workflow
+
+Before implementing any feature:
+
+1. Read the related OpenSpec change/spec.
+2. Restate the requirement boundary.
+3. Identify what is explicitly out of scope.
+4. Create or update tests first.
+5. Implement the minimum code to pass tests.
+6. Run tests.
+7. Refactor only after tests pass.
+
+All features MUST enter OpenSpec as a change before implementation.
+
+## TDD Policy
+
+Use **Pragmatic TDD**:
+
+- Backend domain logic and service logic: **test-first**.
+- Simple CRUD: integration tests may come first.
+- Frontend: test `services/` and `utils/` first; UI snapshot tests not required in MVP.
+
+Required test coverage for backend core flows:
+
+- successful path
+- invalid parameters
+- duplicate submission
+- illegal state transition
+- permission or ownership boundary
+
+## API Rules
+
+REST style. All responses use unified format:
+
+```json
+{
+  "success": true,
+  "code": "SUCCESS",
+  "message": "OK",
+  "data": {}
+}
+```
+
+Errors must use stable error codes. Do not expose stack traces to clients.
+
+## Database Rules
+
+Flyway path: `services/credo-server/src/main/resources/db/migration`
+
+Naming: `V{number}__{description}.sql`
+
+- Never edit an already-applied migration.
+- Add a new migration for every schema change.
+- Do not manually change database schema.
+
+## Security Rules
+
+Never commit: database passwords, JWT secrets, WeChat AppSecret, Aliyun secrets, production configuration.
+Use environment variables for all sensitive configuration.
+
+## Scope Control
+
+Do not add features outside the current OpenSpec change.
+
+Out of scope unless there is an approved OpenSpec change:
+
+- AI features
+- multi-contract system
+- credit score
+- ranking
+- community
+- reports
+- analytics dashboard
+- web admin
+
+Current MVP domain: **Sleep Credit Account** only.
+
+## Hard Rules
+
+1. All requirements must enter OpenSpec change first.
+2. Every implementation task must include a test task; tests before implementation.
+3. Backend core business follows Pragmatic TDD.
+4. Database changes via Flyway only; no manual schema changes.
+5. Applied Flyway migrations are immutable.
+6. Controllers must not contain business logic.
+7. Frontend pages stay thin; API calls live in `services/`.
+8. Sensitive config via environment variables only.
+9. PR merge requires passing `mvn test`, `tsc`, `eslint`.
+10. Do not introduce unapproved new tech stacks.

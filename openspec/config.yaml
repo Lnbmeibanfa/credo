@@ -1,0 +1,29 @@
+schema: spec-driven
+
+context: |
+  Credo is a monorepo project.
+  apps/mini is a Taro + React + TypeScript WeChat Mini Program.
+  apps/web is a future Web app placeholder — no complex rules yet.
+  services/credo-server is a Java 21 + Spring Boot backend with MyBatis-Plus.
+  Database migrations are managed by Flyway at services/credo-server/src/main/resources/db/migration.
+  Development follows Pragmatic TDD.
+  Every implementation task must include a related test task before implementation.
+  Backend layers: controller -> service -> mapper.
+  Persistence uses MyBatis-Plus (not JPA).
+  Unified API response: { success, code, message, data }.
+  Frontend pages must be thin. API calls live in services/.
+  Sensitive configuration must use environment variables.
+  Current MVP domain: Sleep Credit Account only.
+
+  Out of scope unless explicitly approved:
+  AI features, multi-contract system, credit score, ranking,
+  community, reports, analytics dashboard, web admin.
+
+rules:
+  proposal:
+    - Always include a "Non-goals" section listing out-of-scope features.
+  tasks:
+    - Every implementation task MUST include a test task.
+    - Test tasks MUST appear before implementation tasks.
+    - Database schema changes MUST include Flyway migration tasks.
+    - Do not include out-of-scope product features in implementation tasks.

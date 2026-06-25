@@ -1,0 +1,47 @@
+---
+description: Credo backend Java/Spring Boot conventions
+globs: services/credo-server/**/*
+alwaysApply: false
+---
+
+# Backend Rules
+
+Stack: Java 21, Spring Boot 3.5, MyBatis-Plus, Flyway, MySQL.
+
+## Package Structure
+
+```
+com.credo.credo_server/
+├── controller/   HTTP request/response only
+├── service/      business rules
+├── mapper/       MyBatis-Plus mapper interfaces
+├── entity/       database entities
+├── dto/          request/response objects
+├── common/       unified response, error codes, exceptions
+└── config/       framework configuration
+```
+
+- Controller: validate input, delegate to service, map to DTO. No business logic.
+- Service: owns business rules and orchestration.
+- Mapper: database access only via MyBatis-Plus.
+
+## Persistence
+
+Use MyBatis-Plus (not JPA). Mapper interfaces extend `BaseMapper<Entity>`.
+
+Database schema changes: Flyway migrations only.
+Migration naming: `V{number}__{snake_case_description}.sql`
+
+## Unified Response
+
+Wrap all API results in `ApiResponse<T>` with fields: `success`, `code`, `message`, `data`.
+Business exceptions map to stable error codes; never leak stack traces.
+
+## Testing
+
+See `docs/testing-strategy.md`. Summary:
+
+- Service: Mockito unit tests (primary)
+- Controller: `@WebMvcTest` with mocked services
+- Mapper/DB: Testcontainers + MySQL for integration tests
+- Flyway migrations must pass in test environment before production

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: credo-server
+
+  profiles:
+    active: dev
+
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+jwt:
+  secret: ${JWT_SECRET:credo-default-secret}
+  expire-hours: 168
+
+wechat:
+  mini-app-id: ${WECHAT_MINI_APP_ID:}
+  mini-app-secret: ${WECHAT_MINI_APP_SECRET:}
