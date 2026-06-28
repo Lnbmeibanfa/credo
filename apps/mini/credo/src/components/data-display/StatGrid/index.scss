@@ -1,0 +1,43 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-stat-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 16rpx;
+  border-right: $border-width solid $color-border;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4rpx;
+  }
+
+  &__unit {
+    font-family: $font-sans;
+    font-size: $text-caption;
+    color: $color-text-secondary;
+  }
+}
+
+.credo-stat-grid {
+  @include card-border;
+  margin-bottom: $row-gap;
+
+  &__row {
+    display: flex;
+  }
+
+  &__motto {
+    padding: 16rpx $card-padding;
+    border-top: $border-width solid $color-border;
+    display: block;
+    font-style: italic;
+  }
+}

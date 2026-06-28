@@ -1,0 +1,17 @@
+@use '../../../styles/tokens' as *;
+
+.credo-status-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border: $border-width solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &__char {
+    font-family: $font-mono;
+    font-size: $text-caption;
+    font-weight: 600;
+  }
+}

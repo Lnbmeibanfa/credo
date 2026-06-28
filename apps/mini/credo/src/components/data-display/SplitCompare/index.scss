@@ -1,0 +1,29 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-split-compare {
+  @include card-border;
+
+  &__header {
+    padding: 20rpx $card-padding;
+    border-bottom: $border-width solid $color-border;
+  }
+
+  &__body {
+    display: flex;
+    padding: $card-padding;
+  }
+
+  &__col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+  }
+
+  &__divider {
+    width: $border-width;
+    background-color: $color-border;
+    margin: 0 24rpx;
+  }
+}

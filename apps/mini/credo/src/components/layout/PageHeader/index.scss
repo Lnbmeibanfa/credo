@@ -1,0 +1,39 @@
+@use '../../../styles/tokens' as *;
+
+.credo-page-header {
+  margin-bottom: $section-gap;
+
+  &__main {
+    display: flex;
+    align-items: flex-start;
+    gap: 24rpx;
+  }
+
+  &__brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+  }
+
+  &__right {
+    margin-left: auto;
+  }
+
+  &--context {
+    display: flex;
+    flex-direction: column;
+    gap: 12rpx;
+  }
+
+  &__context-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__right-label {
+    font-family: $font-sans;
+    font-size: $text-caption;
+    color: $color-text-secondary;
+  }
+}

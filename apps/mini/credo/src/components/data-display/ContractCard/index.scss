@@ -1,0 +1,21 @@
+.credo-contract-card {
+  .credo-split-compare {
+    border: none;
+  }
+
+  .credo-card__body {
+    padding: 0;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__status {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+  }
+}

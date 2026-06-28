@@ -1,0 +1,17 @@
+@use '../../../styles/tokens' as *;
+
+.credo-info-box {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx;
+  background-color: $color-bg-muted;
+  border: $border-width solid $color-border;
+
+  &__icon {
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+  }
+}

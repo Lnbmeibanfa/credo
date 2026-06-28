@@ -10,6 +10,7 @@
     "framework": "React"
   },
   "scripts": {
+    "test": "vitest run",
     "prepare": "husky",
     "new": "taro new",
     "build:weapp": "taro build --type weapp",
@@ -89,6 +90,7 @@
     "sass": "^1.75.0",
     "typescript": "^5.4.5",
     "postcss": "^8.5.6",
-    "@types/minimatch": "^5"
+    "@types/minimatch": "^5",
+    "vitest": "^3.2.4"
   }
 }

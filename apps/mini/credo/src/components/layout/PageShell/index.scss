@@ -1,0 +1,17 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-page-shell {
+  min-height: 100vh;
+  padding: $page-padding-y $page-padding-x;
+  box-sizing: border-box;
+  @include safe-area-padding;
+
+  &--dot-grid {
+    @include dot-grid-background;
+  }
+
+  &:not(&--dot-grid) {
+    background-color: $color-bg-page;
+  }
+}

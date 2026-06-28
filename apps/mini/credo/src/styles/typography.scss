@@ -1,0 +1,47 @@
+@use 'tokens' as *;
+
+@mixin mono-label {
+  font-family: $font-mono;
+  font-size: $text-mono;
+  color: $color-text-secondary;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@mixin serif-title {
+  font-family: $font-serif;
+  font-size: $text-title;
+  font-weight: 700;
+  color: $color-text-primary;
+  line-height: 1.3;
+}
+
+@mixin serif-subtitle {
+  font-family: $font-serif;
+  font-size: $text-heading;
+  font-weight: 400;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+@mixin serif-display {
+  font-family: $font-serif;
+  font-size: $text-time-display;
+  font-weight: 400;
+  color: $color-text-primary;
+  line-height: 1.2;
+}
+
+@mixin sans-text {
+  font-family: $font-sans;
+  font-size: $text-body;
+  color: $color-text-primary;
+  line-height: 1.6;
+}
+
+@mixin sans-caption {
+  font-family: $font-sans;
+  font-size: $text-caption;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}

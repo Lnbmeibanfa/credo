@@ -1,0 +1,36 @@
+@use '../../../styles/tokens' as *;
+
+.credo-primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 28rpx 32rpx;
+  background-color: $color-bg-inverse;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0;
+  line-height: normal;
+
+  &::after {
+    border: none;
+  }
+
+  &--full {
+    width: 100%;
+  }
+
+  &--spaced .credo-primary-button__text {
+    letter-spacing: 0.3em;
+  }
+
+  &__text {
+    color: $color-text-inverse;
+    font-family: $font-sans;
+    font-size: $text-body;
+  }
+
+  &__icon {
+    color: $color-text-inverse;
+  }
+}

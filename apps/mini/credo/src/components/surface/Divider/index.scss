@@ -1,0 +1,8 @@
+@use '../../../styles/tokens' as *;
+
+.credo-divider {
+  height: $border-width;
+  background-color: $color-border;
+  width: 100%;
+  margin: $row-gap 0;
+}

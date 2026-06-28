@@ -1,0 +1,13 @@
+@use '../../../styles/tokens' as *;
+
+.credo-countdown-timer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+
+  &__value {
+    font-size: $text-countdown;
+    font-family: $font-mono;
+  }
+}

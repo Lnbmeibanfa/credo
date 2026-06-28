@@ -1,0 +1,16 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-card {
+  @include card-border;
+
+  &__body {
+    padding: $card-padding;
+  }
+
+  &__footer {
+    padding: 20rpx $card-padding;
+    background-color: $color-bg-muted;
+    border-top: $border-width solid $color-border;
+  }
+}

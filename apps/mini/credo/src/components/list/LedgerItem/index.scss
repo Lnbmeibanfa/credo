@@ -1,0 +1,55 @@
+@use '../../../styles/tokens' as *;
+
+.credo-ledger-item {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx 0;
+  border-bottom: $border-width solid $color-border;
+  align-items: flex-start;
+
+  &__date {
+    width: 80rpx;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  &__date-text {
+    font-family: $font-mono;
+    font-size: $text-caption;
+    color: $color-text-primary;
+  }
+
+  &__weekday {
+    font-family: $font-sans;
+    font-size: 20rpx;
+    color: $color-text-hint;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    margin-bottom: 8rpx;
+  }
+
+  &__title {
+    font-family: $font-serif;
+    font-size: $text-body;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__desc {
+    font-family: $font-sans;
+    font-size: $text-caption;
+    color: $color-text-secondary;
+    line-height: 1.5;
+  }
+}

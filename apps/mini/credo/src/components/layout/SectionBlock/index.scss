@@ -1,0 +1,12 @@
+@use '../../../styles/tokens' as *;
+
+.credo-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: $section-gap;
+
+  &__content {
+    margin-top: 8rpx;
+  }
+}

@@ -1,0 +1,29 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-segmented-control {
+  display: flex;
+  gap: 16rpx;
+
+  &__item {
+    @include card-border;
+    flex: 1;
+    padding: 24rpx;
+    text-align: center;
+
+    &--selected {
+      background-color: $color-bg-inverse;
+      border-color: $color-bg-inverse;
+
+      .credo-segmented-control__label {
+        color: $color-text-inverse;
+      }
+    }
+  }
+
+  &__label {
+    font-family: $font-sans;
+    font-size: $text-body;
+    color: $color-text-primary;
+  }
+}

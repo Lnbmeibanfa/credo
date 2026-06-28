@@ -1,0 +1,6 @@
+@use '../../../styles/typography' as *;
+
+.credo-serif-title {
+  @include serif-title;
+  display: block;
+}

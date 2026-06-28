@@ -1,0 +1,6 @@
+@use '../../../styles/typography' as *;
+
+.credo-serif-display {
+  @include serif-display;
+  display: block;
+}

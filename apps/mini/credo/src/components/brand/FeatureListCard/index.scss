@@ -1,0 +1,29 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+@use '../../../styles/typography' as *;
+
+.credo-feature-list-card {
+  @include card-border;
+
+  &__row {
+    display: flex;
+    padding: 24rpx $card-padding;
+    border-bottom: $border-width solid $color-border;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    @include serif-title;
+    font-size: $text-body;
+    width: 120rpx;
+    flex-shrink: 0;
+  }
+
+  &__desc {
+    @include sans-caption;
+    flex: 1;
+  }
+}

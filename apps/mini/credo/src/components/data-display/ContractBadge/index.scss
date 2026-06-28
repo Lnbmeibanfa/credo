@@ -1,0 +1,12 @@
+@use '../../../styles/tokens' as *;
+
+.credo-contract-badge {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+
+  &__icon {
+    flex-shrink: 0;
+  }
+}

@@ -12,11 +12,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "rootDir": ".",
     "jsx": "react-jsx",
     "allowJs": true,
     "resolveJsonModule": true,
+    "baseUrl": ".",
     "typeRoots": [
       "node_modules/@types"
     ],

@@ -1,0 +1,17 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/typography' as *;
+
+.credo-brand-logo {
+  width: 72rpx;
+  height: 72rpx;
+  border: $border-width solid $color-border-strong;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &__char {
+    @include serif-title;
+    font-size: 36rpx;
+  }
+}

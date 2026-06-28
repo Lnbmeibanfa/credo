@@ -1,0 +1,13 @@
+@use '../../../styles/typography' as *;
+
+.credo-sans-text {
+  display: block;
+
+  &--body {
+    @include sans-text;
+  }
+
+  &--caption {
+    @include sans-caption;
+  }
+}

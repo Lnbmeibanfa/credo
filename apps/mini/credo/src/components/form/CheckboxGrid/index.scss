@@ -1,0 +1,49 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-checkbox-grid {
+  display: grid;
+  gap: 16rpx;
+
+  &--cols-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &--cols-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  &__item {
+    @include card-border;
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+    padding: 20rpx 16rpx;
+  }
+
+  &__box {
+    width: 32rpx;
+    height: 32rpx;
+    border: $border-width solid $color-border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &--checked {
+      background-color: $color-status-exempt;
+      border-color: $color-status-exempt;
+    }
+  }
+
+  &__check {
+    color: $color-text-inverse;
+    font-size: 20rpx;
+  }
+
+  &__label {
+    font-family: $font-sans;
+    font-size: $text-caption;
+    color: $color-text-primary;
+  }
+}

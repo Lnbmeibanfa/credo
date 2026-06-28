@@ -1,0 +1,6 @@
+@use '../../../styles/typography' as *;
+
+.credo-mono-label {
+  @include mono-label;
+  display: block;
+}

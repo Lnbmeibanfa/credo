@@ -1,0 +1,54 @@
+// Credo design tokens — system fonts only
+
+// Colors
+$color-bg-page: #f2f2f0;
+$color-bg-surface: #ffffff;
+$color-bg-muted: #f5f5f3;
+$color-bg-inverse: #111111;
+
+$color-text-primary: #111111;
+$color-text-secondary: #888888;
+$color-text-inverse: #ffffff;
+$color-text-hint: #aaaaaa;
+
+$color-border: #e0e0e0;
+$color-border-strong: #111111;
+
+$color-accent-gold: #c4a265;
+
+$color-status-fulfilled: #2d6a4f;
+$color-status-breach: #8b4049;
+$color-status-remedy: #666666;
+$color-status-exempt: #8b6914;
+$color-status-sign: #111111;
+
+// Typography — system font stacks
+$font-serif: 'Songti SC', 'STSong', 'SimSun', serif;
+$font-sans: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+$font-mono: 'SF Mono', 'Menlo', 'Courier New', monospace;
+
+$text-display: 48rpx;
+$text-title: 40rpx;
+$text-heading: 32rpx;
+$text-body: 28rpx;
+$text-caption: 24rpx;
+$text-mono: 22rpx;
+$text-time-display: 64rpx;
+$text-countdown: 44rpx;
+
+// Spacing
+$page-padding-x: 32rpx;
+$page-padding-y: 24rpx;
+$section-gap: 48rpx;
+$card-padding: 32rpx;
+$row-gap: 24rpx;
+
+// Border
+$border-width: 1px;
+$radius-none: 0;
+$radius-sm: 4rpx;
+
+// Dot grid
+$dot-grid-size: 16rpx;
+$dot-grid-color: rgba(0, 0, 0, 0.06);
+$quote-bar-width: 6rpx;

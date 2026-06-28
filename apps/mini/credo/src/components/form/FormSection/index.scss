@@ -1,0 +1,13 @@
+@use '../../../styles/tokens' as *;
+
+.credo-form-section {
+  margin-bottom: $section-gap;
+
+  &__title {
+    margin-bottom: 8rpx;
+  }
+
+  &__content {
+    margin-top: 20rpx;
+  }
+}

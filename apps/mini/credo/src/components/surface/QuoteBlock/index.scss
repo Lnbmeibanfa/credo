@@ -1,0 +1,8 @@
+@use '../../../styles/mixins' as *;
+
+.credo-quote-block {
+  @include quote-bar;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}

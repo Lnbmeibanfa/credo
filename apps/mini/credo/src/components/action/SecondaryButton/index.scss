@@ -1,0 +1,22 @@
+@use '../../../styles/tokens' as *;
+
+.credo-secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 28rpx 32rpx;
+  background-color: $color-bg-surface;
+  border: $border-width solid $color-border-strong;
+  box-sizing: border-box;
+
+  &--full {
+    width: 100%;
+  }
+
+  &__text {
+    color: $color-text-primary;
+    font-family: $font-sans;
+    font-size: $text-body;
+  }
+}

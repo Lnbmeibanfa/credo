@@ -1,0 +1,36 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-option-grid {
+  display: grid;
+  gap: 16rpx;
+
+  &--cols-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &--cols-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  &__item {
+    @include card-border;
+    padding: 24rpx 16rpx;
+    text-align: center;
+
+    &--selected {
+      background-color: $color-bg-inverse;
+      border-color: $color-bg-inverse;
+
+      .credo-option-grid__label {
+        color: $color-text-inverse;
+      }
+    }
+  }
+
+  &__label {
+    font-family: $font-sans;
+    font-size: $text-caption;
+    color: $color-text-primary;
+  }
+}

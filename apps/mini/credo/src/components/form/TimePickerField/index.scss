@@ -1,0 +1,15 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-time-picker-field {
+  @include card-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx $card-padding;
+
+  &__icon {
+    font-size: 36rpx;
+    color: $color-text-secondary;
+  }
+}

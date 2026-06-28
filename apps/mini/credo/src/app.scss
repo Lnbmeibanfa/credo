@@ -1,0 +1,8 @@
+@use './styles/tokens' as *;
+
+page {
+  font-family: $font-sans;
+  font-size: $text-body;
+  color: $color-text-primary;
+  background-color: $color-bg-page;
+}
