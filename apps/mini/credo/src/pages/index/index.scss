@@ -1,0 +1,49 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/typography' as *;
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 48rpx;
+
+  &__hero {
+    margin-bottom: $section-gap;
+  }
+
+  &__hero-line {
+    @include serif-title;
+    display: block;
+    font-size: $text-display;
+    line-height: 1.35;
+    margin-bottom: 16rpx;
+
+    &--sub {
+      font-size: $text-heading;
+      font-weight: 400;
+    }
+  }
+
+  &__quote {
+    margin-bottom: $section-gap;
+  }
+
+  &__features {
+    margin-bottom: 32rpx;
+  }
+
+  &__hint {
+    display: block;
+    text-align: center;
+    margin-bottom: 24rpx;
+  }
+
+  &__cta {
+    margin-bottom: 32rpx;
+  }
+
+  &__footer {
+    display: block;
+    text-align: center;
+  }
+}

@@ -1,10 +1,11 @@
+import path from 'path'
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 
 import devConfig from './dev'
 import prodConfig from './prod'
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig<'vite'>(async (merge, { command, mode }) => {
+export default defineConfig<'vite'>(async (merge) => {
   const baseConfig: UserConfigExport<'vite'> = {
     projectName: 'credo',
     date: '2026-6-24',
@@ -17,10 +18,14 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     },
     sourceRoot: 'src',
     outputRoot: 'dist',
+    alias: {
+      '@': path.resolve(__dirname, '..', 'src'),
+    },
     plugins: [
       "@tarojs/plugin-generator"
     ],
     defineConstants: {
+      API_BASE_URL: JSON.stringify('http://localhost:8080'),
     },
     copy: {
       patterns: [
