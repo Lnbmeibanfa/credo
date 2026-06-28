@@ -23,7 +23,7 @@ logging:
     root: info
 
 jwt:
-  secret: ${JWT_SECRET:credo-default-secret}
+  secret: ${JWT_SECRET:credo-default-secret-key-min-32-chars!!}
   expire-hours: 168
 
 wechat:
