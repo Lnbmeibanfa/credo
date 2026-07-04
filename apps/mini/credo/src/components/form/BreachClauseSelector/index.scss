@@ -1,0 +1,66 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+
+.credo-breach-clause-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+
+  &__item {
+    @include card-border;
+    padding: 24rpx $card-padding;
+    display: flex;
+    flex-direction: column;
+    gap: 16rpx;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+
+    &--locked {
+      opacity: 1;
+    }
+  }
+
+  &__box {
+    width: 36rpx;
+    height: 36rpx;
+    border: 1px solid $color-border-strong;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &--checked {
+      background: $color-bg-inverse;
+    }
+  }
+
+  &__check {
+    color: $color-text-inverse;
+    font-size: 24rpx;
+    line-height: 1;
+  }
+
+  &__label-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+  }
+
+  &__lock {
+    font-size: $text-caption;
+    color: $color-accent-gold;
+  }
+
+  &__hint {
+    padding-left: 52rpx;
+    color: $color-text-secondary;
+  }
+
+  &__textarea {
+    margin-top: 8rpx;
+  }
+}

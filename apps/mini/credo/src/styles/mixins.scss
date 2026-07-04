@@ -16,9 +16,15 @@
   background-color: $color-bg-surface;
 }
 
-@mixin safe-area-padding {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+// Page content inset — horizontal padding uses rpx only (reliable in WeChat);
+// vertical padding layers safe-area on top of base rpx with constant/env fallback.
+@mixin page-content-padding($padding-y: $page-padding-y, $padding-x: $page-padding-x) {
+  padding-left: $padding-x;
+  padding-right: $padding-x;
+  padding-top: $padding-y;
+  padding-bottom: $padding-y;
+  padding-top: calc(#{$padding-y} + constant(safe-area-inset-top, 0px));
+  padding-top: calc(#{$padding-y} + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(#{$padding-y} + constant(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(#{$padding-y} + env(safe-area-inset-bottom, 0px));
 }

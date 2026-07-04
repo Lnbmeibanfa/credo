@@ -3,10 +3,10 @@
   "description": "credo",
   "setting": {
     "urlCheck": false,
-    "es6": false,
-    "enhance": false,
+    "es6": true,
+    "enhance": true,
     "compileHotReLoad": false,
-    "postcss": false,
+    "postcss": true,
     "minified": false,
     "babelSetting": {
       "ignore": [],

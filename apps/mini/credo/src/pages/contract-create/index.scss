@@ -1,17 +1,20 @@
 @use '../../styles/tokens' as *;
-@use '../../styles/typography' as *;
 
-.contract-create-placeholder {
+.contract-create {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
-  padding-top: 48rpx;
+  gap: 40rpx;
+  padding-bottom: 64rpx;
 
-  &__title {
-    @include serif-title;
+  &__document {
+    margin-top: 8rpx;
   }
 
-  &__desc {
-    @include sans-caption;
+  &__submit {
+    margin-top: 8rpx;
+  }
+
+  &__ledger-link {
+    margin-top: 16rpx;
   }
 }

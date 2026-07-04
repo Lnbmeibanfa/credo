@@ -1,0 +1,92 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+@use '../../../styles/typography' as *;
+
+.credo-sleep-contract-document {
+  @include card-border;
+  padding: 32rpx $card-padding 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  background: $color-bg-surface;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+    align-items: center;
+    text-align: center;
+  }
+
+  &__no {
+    color: $color-text-secondary;
+  }
+
+  &__dates {
+    display: flex;
+    gap: 24rpx;
+  }
+
+  &__date-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+    padding: 16rpx;
+    background: $color-bg-muted;
+  }
+
+  &__date-value {
+    @include serif-display;
+    font-size: $text-heading;
+  }
+
+  &__article {
+    display: flex;
+    flex-direction: column;
+    gap: 12rpx;
+  }
+
+  &__clause-item {
+    display: block;
+    margin-top: 4rpx;
+  }
+
+  &__parties {
+    display: flex;
+    gap: 24rpx;
+  }
+
+  &__party {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+  }
+
+  &__party-name {
+    @include serif-title;
+    font-size: $text-body;
+  }
+
+  &__seal {
+    margin-top: 8rpx;
+    padding: 24rpx;
+    border: 1px dashed $color-border;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8rpx;
+
+    &--signed {
+      border-style: solid;
+      border-color: $color-border-strong;
+    }
+  }
+
+  &__seal-pending {
+    @include serif-display;
+    font-size: $text-heading;
+    color: $color-text-secondary;
+  }
+}

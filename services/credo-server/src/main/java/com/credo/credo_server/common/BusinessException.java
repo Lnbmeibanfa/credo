@@ -30,6 +30,9 @@ public class BusinessException extends RuntimeException {
 	private static HttpStatus mapStatus(ErrorCode errorCode) {
 		return switch (errorCode) {
 			case INVALID_PARAMETER, WECHAT_AUTH_FAILED -> HttpStatus.BAD_REQUEST;
+			case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+			case NO_CONTRACT -> HttpStatus.NOT_FOUND;
+			case DUPLICATE_RECORD -> HttpStatus.CONFLICT;
 			case ACCOUNT_DISABLED -> HttpStatus.FORBIDDEN;
 			default -> HttpStatus.INTERNAL_SERVER_ERROR;
 		};

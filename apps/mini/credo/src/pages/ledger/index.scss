@@ -1,0 +1,44 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.sleep-ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  padding-bottom: 64rpx;
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16rpx;
+  }
+
+  &__stat {
+    @include card-border;
+    padding: 20rpx 24rpx;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+  }
+
+  &__stat-value {
+    font-family: $font-serif;
+    font-size: $text-heading;
+    color: $color-text-primary;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    gap: 24rpx;
+    padding-top: 48rpx;
+  }
+
+  &__queue-empty {
+    display: flex;
+    flex-direction: column;
+    gap: 12rpx;
+    padding: 32rpx 0;
+    text-align: center;
+  }
+}

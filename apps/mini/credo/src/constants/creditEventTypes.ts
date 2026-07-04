@@ -4,6 +4,8 @@ export enum CreditEventType {
   BREACH = 'BREACH',
   REMEDY = 'REMEDY',
   EXEMPT = 'EXEMPT',
+  PENDING = 'PENDING',
+  UPCOMING = 'UPCOMING',
 }
 
 export interface CreditEventVisual {
@@ -43,6 +45,18 @@ export const CREDIT_EVENT_VISUALS: Record<CreditEventType, CreditEventVisual> = 
     label: '豁免',
     color: '#8b6914',
     tagColor: '#8b6914',
+  },
+  [CreditEventType.PENDING]: {
+    icon: '…',
+    label: '待登记',
+    color: '#888888',
+    tagColor: '#888888',
+  },
+  [CreditEventType.UPCOMING]: {
+    icon: '—',
+    label: '未到期',
+    color: '#aaaaaa',
+    tagColor: '#aaaaaa',
   },
 }
 

@@ -35,7 +35,7 @@ class FlywayMigrationTest {
 	private JdbcTemplate jdbcTemplate;
 
 	@Test
-	void flywayAppliesV1AndV2Migrations() {
+	void flywayAppliesV1ThroughV4Migrations() {
 		Integer bindTableCount = jdbcTemplate.queryForObject(
 			"""
 			SELECT COUNT(*)
@@ -58,5 +58,51 @@ class FlywayMigrationTest {
 			Integer.class
 		);
 		assertThat(countryCodeColumnCount).isEqualTo(1);
+
+		Integer contractTableCount = jdbcTemplate.queryForObject(
+			"""
+			SELECT COUNT(*)
+			FROM information_schema.tables
+			WHERE table_schema = DATABASE()
+			  AND table_name IN ('contract', 'sleep_contract', 'contract_breach_clause')
+			""",
+			Integer.class
+		);
+		assertThat(contractTableCount).isEqualTo(3);
+
+		Integer userTypeUniqueCount = jdbcTemplate.queryForObject(
+			"""
+			SELECT COUNT(*)
+			FROM information_schema.statistics
+			WHERE table_schema = DATABASE()
+			  AND table_name = 'contract'
+			  AND index_name = 'uk_user_type'
+			""",
+			Integer.class
+		);
+		assertThat(userTypeUniqueCount).isEqualTo(2);
+
+		Integer ledgerTableCount = jdbcTemplate.queryForObject(
+			"""
+			SELECT COUNT(*)
+			FROM information_schema.tables
+			WHERE table_schema = DATABASE()
+			  AND table_name = 'sleep_ledger_event'
+			""",
+			Integer.class
+		);
+		assertThat(ledgerTableCount).isEqualTo(1);
+
+		Integer ledgerUniqueCount = jdbcTemplate.queryForObject(
+			"""
+			SELECT COUNT(*)
+			FROM information_schema.statistics
+			WHERE table_schema = DATABASE()
+			  AND table_name = 'sleep_ledger_event'
+			  AND index_name = 'uk_contract_record_date'
+			""",
+			Integer.class
+		);
+		assertThat(ledgerUniqueCount).isEqualTo(2);
 	}
 }

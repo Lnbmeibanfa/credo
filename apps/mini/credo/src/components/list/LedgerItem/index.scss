@@ -7,6 +7,14 @@
   border-bottom: $border-width solid $color-border;
   align-items: flex-start;
 
+  &--actionable {
+    cursor: pointer;
+  }
+
+  &--upcoming {
+    opacity: 0.55;
+  }
+
   &__date {
     width: 80rpx;
     flex-shrink: 0;

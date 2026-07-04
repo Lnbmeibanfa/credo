@@ -14,8 +14,10 @@ Each component MUST have its own directory containing at minimum a TSX file and 
 The system SHALL provide layout components:
 
 - **PageShell**: page wrapper with background, safe-area, optional dot-grid
-- **PageHeader**: two modes — `brand` (logo + title + version) and `context` (mono label + serif title + subtitle + optional right label)
+- **PageHeader**: two modes — `brand` (logo + title + version) and `context` (mono label + serif title + subtitle + optional right label, optional back action via `onBack`)
 - **SectionBlock**: mono label + optional title block wrapping children
+
+When `PageHeader` context mode receives `onBack`, it MUST render a tappable back control (e.g. arrow + 「返回」) that invokes the callback.
 
 #### Scenario: Brand header on welcome screen
 
@@ -26,6 +28,11 @@ The system SHALL provide layout components:
 
 - **WHEN** PageHeader is rendered with `mode="context"` and monoLabel "TODAY · 2026.06.27"
 - **THEN** it displays the mono label, serif title, and optional subtitle
+
+#### Scenario: Context header with back action
+
+- **WHEN** PageHeader is rendered with `mode="context"` and `onBack` callback
+- **THEN** a back control is visible and tapping it invokes `onBack`
 
 ### Requirement: Surface components
 
@@ -64,6 +71,8 @@ The system SHALL provide form components:
 
 - **FormSection**: numbered section header (index · title) with optional hint text
 - **TimePickerField**: large bordered time display triggering Taro time picker; exposes value/onChange as "HH:mm" string
+- **DateRangeField**: inclusive start/end date pickers at day granularity with total days display (共 N 天)
+- **BreachClauseSelector**: sleep contract breach clause configuration with mandatory RECORD row
 - **CheckboxGrid**: multi-select grid with check-icon style (used for exemption conditions)
 - **OptionGrid**: selectable grid supporting single or multiple mode with inverse selected style
 - **SegmentedControl**: binary or small-set toggle (e.g. 是/否)
@@ -98,6 +107,7 @@ The system SHALL provide data display components:
 - **CountdownTimer**: displays remaining time as "HH : mm : ss" computed locally from a target time
 - **StatGrid**: horizontal row of stat cells with optional motto text below
 - **StatCell**: single stat with label, value, and optional unit
+- **SleepContractDocument**: formal sleep contract document with preview and signed modes
 
 CountdownTimer MUST compute remaining time on the client using setInterval without requiring a server-provided countdown value.
 
@@ -125,7 +135,7 @@ The system SHALL provide list components for the credit ledger:
 - **StatusTag**: colored tag pill mapped from CreditEventType
 - **StatusIcon**: square icon box with character (S, +, -, R, ○) mapped from CreditEventType
 
-CreditEventType enum MUST be defined in `constants/creditEventTypes.ts` with visual mapping for: SIGN, FULFILLED, BREACH, REMEDY, EXEMPT.
+CreditEventType enum MUST be defined in `constants/creditEventTypes.ts` with visual mapping for: SIGN, FULFILLED, BREACH, REMEDY, EXEMPT, PENDING, UPCOMING.
 
 #### Scenario: Fulfilled ledger entry
 
@@ -181,3 +191,67 @@ The system SHALL define shared constants:
 
 - **WHEN** contract creation and daily review both import exemptionOptions
 - **THEN** they display identical option labels and ids
+
+### Requirement: Date range field component
+
+The system SHALL provide `DateRangeField` in `components/form/` for selecting inclusive start and end dates at day granularity.
+
+The component MUST display selected range and computed total days (共 N 天).
+
+#### Scenario: Day granularity selection
+
+- **WHEN** user selects start and end dates
+- **THEN** values are emitted as YYYY-MM-DD strings
+
+#### Scenario: Total days shown
+
+- **WHEN** range spans 30 inclusive days
+- **THEN** component displays 共 30 天
+
+### Requirement: Breach clause selector component
+
+The system SHALL provide `BreachClauseSelector` in `components/form/` for sleep contract breach clause configuration.
+
+RECORD row MUST be mandatory and locked. REVIEW and CUSTOM MUST be toggleable. CUSTOM MUST show editable text when enabled.
+
+#### Scenario: Mandatory record row
+
+- **WHEN** BreachClauseSelector renders
+- **THEN** RECORD cannot be unchecked
+
+### Requirement: Sleep contract document component
+
+The system SHALL provide `SleepContractDocument` in `components/data-display/` rendering formal contract document with preview and signed modes.
+
+#### Scenario: Component export
+
+- **WHEN** contract-create page imports document component
+- **THEN** it is available from components barrel export
+
+### Requirement: Ledger pending and upcoming display
+
+The system SHALL extend list/status components to support sleep ledger read-model statuses:
+
+- **PENDING** (待登记): actionable pending registration state
+- **UPCOMING** (未到期): future contract day, not yet registrable
+
+`StatusIcon` and `StatusTag` MUST provide distinct visuals for PENDING and UPCOMING in addition to existing CreditEventType mappings.
+
+#### Scenario: Pending ledger row
+
+- **WHEN** LedgerItem receives statusType PENDING
+- **THEN** StatusTag shows 待登记 with muted/pending styling
+
+#### Scenario: Upcoming ledger row
+
+- **WHEN** LedgerItem receives statusType UPCOMING
+- **THEN** row appears disabled/non-interactive with 未到期 label
+
+### Requirement: CreditEventType read-model extension
+
+`constants/creditEventTypes.ts` SHALL define visual mappings for PENDING and UPCOMING used only for daily-view display, separate from append-only ledger event types FULFILLED and BREACH.
+
+#### Scenario: Visual map completeness
+
+- **WHEN** ledger page maps daily-view status to LedgerItem
+- **THEN** PENDING and UPCOMING resolve to icons, labels, and colors via creditEventTypes

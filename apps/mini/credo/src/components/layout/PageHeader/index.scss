@@ -31,6 +31,16 @@
     align-items: center;
   }
 
+  &__back {
+    margin-bottom: 8rpx;
+  }
+
+  &__back-text {
+    font-family: $font-sans;
+    font-size: $text-caption;
+    color: $color-text-secondary;
+  }
+
   &__right-label {
     font-family: $font-sans;
     font-size: $text-caption;

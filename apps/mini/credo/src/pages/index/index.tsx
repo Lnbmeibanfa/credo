@@ -9,6 +9,7 @@ import {
   PrimaryButton,
   MonoLabel,
   SansText,
+  SecondaryButton,
 } from '@/components'
 import { WELCOME_CONTENT } from '@/constants/welcomeContent'
 import { hasStoredToken, phoneLogin } from '@/services/auth'
@@ -80,9 +81,14 @@ export default function Index () {
 
         <View className='welcome__cta'>
           {isAuthenticated ? (
-            <PrimaryButton letterSpacing onClick={handleStartContract}>
-              {WELCOME_CONTENT.ctaLabel}
-            </PrimaryButton>
+            <>
+              <PrimaryButton letterSpacing onClick={handleStartContract}>
+                {WELCOME_CONTENT.ctaLabel}
+              </PrimaryButton>
+              <SecondaryButton onClick={() => Taro.navigateTo({ url: '/pages/ledger/index' })}>
+                查看睡眠账本
+              </SecondaryButton>
+            </>
           ) : (
             <PrimaryButton
               letterSpacing

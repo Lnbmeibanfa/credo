@@ -3,9 +3,8 @@
 
 .credo-page-shell {
   min-height: 100vh;
-  padding: $page-padding-y $page-padding-x;
   box-sizing: border-box;
-  @include safe-area-padding;
+  @include page-content-padding;
 
   &--dot-grid {
     @include dot-grid-background;

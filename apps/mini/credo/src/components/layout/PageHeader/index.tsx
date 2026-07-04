@@ -18,6 +18,7 @@ interface PageHeaderContextProps {
   title: string
   subtitle?: string
   rightLabel?: string
+  onBack?: () => void
 }
 
 export type PageHeaderProps = PageHeaderBrandProps | PageHeaderContextProps
@@ -43,6 +44,11 @@ export default function PageHeader (props: PageHeaderProps) {
 
   return (
     <View className='credo-page-header credo-page-header--context'>
+      {props.onBack && (
+        <View className='credo-page-header__back' onClick={props.onBack}>
+          <Text className='credo-page-header__back-text'>← 返回</Text>
+        </View>
+      )}
       <View className='credo-page-header__context-top'>
         <MonoLabel>{props.monoLabel}</MonoLabel>
         {props.rightLabel && (

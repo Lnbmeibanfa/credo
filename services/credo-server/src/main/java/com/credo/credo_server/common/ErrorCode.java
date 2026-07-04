@@ -4,6 +4,9 @@ public enum ErrorCode {
 
 	SUCCESS("SUCCESS", "OK"),
 	INVALID_PARAMETER("INVALID_PARAMETER", "Invalid request parameters"),
+	UNAUTHORIZED("UNAUTHORIZED", "Authentication required"),
+	NO_CONTRACT("NO_CONTRACT", "Sleep contract not found"),
+	DUPLICATE_RECORD("DUPLICATE_RECORD", "Record already exists for this date"),
 	WECHAT_AUTH_FAILED("WECHAT_AUTH_FAILED", "WeChat authorization failed"),
 	ACCOUNT_DISABLED("ACCOUNT_DISABLED", "Account is disabled"),
 	INTERNAL_ERROR("INTERNAL_ERROR", "Internal server error");

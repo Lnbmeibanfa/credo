@@ -12,6 +12,8 @@ interface LedgerItemProps {
   description: string
   tagText?: string
   className?: string
+  actionable?: boolean
+  onPress?: () => void
 }
 
 export default function LedgerItem ({
@@ -22,9 +24,18 @@ export default function LedgerItem ({
   description,
   tagText,
   className = '',
+  actionable = false,
+  onPress,
 }: LedgerItemProps) {
+  const rootClass = [
+    'credo-ledger-item',
+    actionable ? 'credo-ledger-item--actionable' : '',
+    statusType === CreditEventType.UPCOMING ? 'credo-ledger-item--upcoming' : '',
+    className,
+  ].filter(Boolean).join(' ')
+
   return (
-    <View className={`credo-ledger-item ${className}`.trim()}>
+    <View className={rootClass} onClick={actionable ? onPress : undefined}>
       <View className='credo-ledger-item__date'>
         <Text className='credo-ledger-item__date-text'>{date}</Text>
         <Text className='credo-ledger-item__weekday'>{weekday}</Text>
