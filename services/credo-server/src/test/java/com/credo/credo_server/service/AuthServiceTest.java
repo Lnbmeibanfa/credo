@@ -2,7 +2,6 @@ package com.credo.credo_server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.credo.credo_server.client.WeChatClient;
-import com.credo.credo_server.client.WeChatPhoneResult;
 import com.credo.credo_server.client.WeChatSessionResult;
 import com.credo.credo_server.common.BusinessException;
 import com.credo.credo_server.common.ErrorCode;
@@ -49,71 +48,80 @@ class AuthServiceTest {
 	private AuthService authService;
 
 	@Test
-	@DisplayName("registers new user and binds openid")
-	void phoneLogin_newUser_returnsTokenAndIsNewUser() {
+	@DisplayName("registers new user by openid with null phone")
+	void wechatLogin_newUser_returnsTokenAndIsNewUser() {
 		when(weChatProperties.getMiniAppId()).thenReturn("wxbda744f66076ee8e");
 		when(weChatClient.code2Session("login-code")).thenReturn(new WeChatSessionResult("openid-1", null));
-		when(weChatClient.getPhoneNumber("phone-code"))
-			.thenReturn(new WeChatPhoneResult("13800138000", "86"));
-		when(userAccountMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(null);
+		when(userWechatBindMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(null);
 		when(userAccountMapper.insert(any(UserAccount.class))).thenAnswer(invocation -> {
 			UserAccount user = invocation.getArgument(0);
 			user.setId(1L);
 			return 1;
 		});
-		when(userWechatBindMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(null);
-		when(jwtService.generateToken(1L, "13800138000")).thenReturn("jwt-token");
+		when(jwtService.generateToken(1L, null)).thenReturn("jwt-token");
 
-		PhoneLoginResponse response = authService.phoneLogin("login-code", "phone-code");
+		PhoneLoginResponse response = authService.wechatLogin("login-code");
 
 		assertThat(response.isNewUser()).isTrue();
 		assertThat(response.getToken()).isEqualTo("jwt-token");
-		assertThat(response.getUser().getPhone()).isEqualTo("13800138000");
+		assertThat(response.getUser().getPhone()).isNull();
+
+		ArgumentCaptor<UserAccount> userCaptor = ArgumentCaptor.forClass(UserAccount.class);
+		verify(userAccountMapper).insert(userCaptor.capture());
+		assertThat(userCaptor.getValue().getPhone()).isNull();
 
 		ArgumentCaptor<UserWechatBind> bindCaptor = ArgumentCaptor.forClass(UserWechatBind.class);
 		verify(userWechatBindMapper).insert(bindCaptor.capture());
 		assertThat(bindCaptor.getValue().getOpenId()).isEqualTo("openid-1");
 		assertThat(bindCaptor.getValue().getUserId()).isEqualTo(1L);
+		verify(weChatClient, never()).getPhoneNumber(any());
 	}
 
 	@Test
-	@DisplayName("logs in existing active user")
-	void phoneLogin_existingUser_returnsTokenAndIsNotNewUser() {
+	@DisplayName("logs in existing bound active user")
+	void wechatLogin_existingUser_returnsTokenAndIsNotNewUser() {
 		when(weChatProperties.getMiniAppId()).thenReturn("wxbda744f66076ee8e");
 		UserAccount existing = new UserAccount();
 		existing.setId(2L);
 		existing.setPhone("13800138000");
 		existing.setStatus(1);
 
+		UserWechatBind bind = new UserWechatBind();
+		bind.setId(10L);
+		bind.setUserId(2L);
+		bind.setOpenId("openid-2");
+
 		when(weChatClient.code2Session("login-code")).thenReturn(new WeChatSessionResult("openid-2", "union-2"));
-		when(weChatClient.getPhoneNumber("phone-code"))
-			.thenReturn(new WeChatPhoneResult("13800138000", "86"));
-		when(userAccountMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(existing);
-		when(userWechatBindMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(null);
+		when(userWechatBindMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(bind);
+		when(userAccountMapper.selectById(2L)).thenReturn(existing);
 		when(jwtService.generateToken(2L, "13800138000")).thenReturn("jwt-token");
 
-		PhoneLoginResponse response = authService.phoneLogin("login-code", "phone-code");
+		PhoneLoginResponse response = authService.wechatLogin("login-code");
 
 		assertThat(response.isNewUser()).isFalse();
 		assertThat(response.getToken()).isEqualTo("jwt-token");
 		verify(userAccountMapper).updateById(existing);
 		verify(userAccountMapper, never()).insert(any(UserAccount.class));
+		verify(userWechatBindMapper).updateById(bind);
+		assertThat(bind.getUnionId()).isEqualTo("union-2");
 	}
 
 	@Test
-	@DisplayName("rejects disabled user")
-	void phoneLogin_disabledUser_throwsAccountDisabled() {
+	@DisplayName("rejects disabled bound user")
+	void wechatLogin_disabledUser_throwsAccountDisabled() {
 		UserAccount disabled = new UserAccount();
 		disabled.setId(3L);
-		disabled.setPhone("13800138000");
 		disabled.setStatus(0);
 
-		when(weChatClient.code2Session("login-code")).thenReturn(new WeChatSessionResult("openid-3", null));
-		when(weChatClient.getPhoneNumber("phone-code"))
-			.thenReturn(new WeChatPhoneResult("13800138000", "86"));
-		when(userAccountMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(disabled);
+		UserWechatBind bind = new UserWechatBind();
+		bind.setUserId(3L);
+		bind.setOpenId("openid-3");
 
-		assertThatThrownBy(() -> authService.phoneLogin("login-code", "phone-code"))
+		when(weChatClient.code2Session("login-code")).thenReturn(new WeChatSessionResult("openid-3", null));
+		when(userWechatBindMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(bind);
+		when(userAccountMapper.selectById(3L)).thenReturn(disabled);
+
+		assertThatThrownBy(() -> authService.wechatLogin("login-code"))
 			.isInstanceOf(BusinessException.class)
 			.extracting(ex -> ((BusinessException) ex).getErrorCode())
 			.isEqualTo(ErrorCode.ACCOUNT_DISABLED);
@@ -121,55 +129,15 @@ class AuthServiceTest {
 
 	@Test
 	@DisplayName("propagates invalid login code from WeChat client")
-	void phoneLogin_invalidLoginCode_throwsWeChatAuthFailed() {
+	void wechatLogin_invalidLoginCode_throwsWeChatAuthFailed() {
 		when(weChatClient.code2Session("bad-login"))
 			.thenThrow(new BusinessException(ErrorCode.WECHAT_AUTH_FAILED));
 
-		assertThatThrownBy(() -> authService.phoneLogin("bad-login", "phone-code"))
+		assertThatThrownBy(() -> authService.wechatLogin("bad-login"))
 			.isInstanceOf(BusinessException.class)
 			.extracting(ex -> ((BusinessException) ex).getErrorCode())
 			.isEqualTo(ErrorCode.WECHAT_AUTH_FAILED);
-	}
 
-	@Test
-	@DisplayName("propagates invalid phone code from WeChat client")
-	void phoneLogin_invalidPhoneCode_throwsWeChatAuthFailed() {
-		when(weChatClient.code2Session("login-code")).thenReturn(new WeChatSessionResult("openid-4", null));
-		when(weChatClient.getPhoneNumber("bad-phone"))
-			.thenThrow(new BusinessException(ErrorCode.WECHAT_AUTH_FAILED));
-
-		assertThatThrownBy(() -> authService.phoneLogin("login-code", "bad-phone"))
-			.isInstanceOf(BusinessException.class)
-			.extracting(ex -> ((BusinessException) ex).getErrorCode())
-			.isEqualTo(ErrorCode.WECHAT_AUTH_FAILED);
-	}
-
-	@Test
-	@DisplayName("updates existing openid bind to current user")
-	void phoneLogin_existingOpenIdBind_updatesBind() {
-		when(weChatProperties.getMiniAppId()).thenReturn("wxbda744f66076ee8e");
-		UserAccount existing = new UserAccount();
-		existing.setId(5L);
-		existing.setPhone("13800138000");
-		existing.setStatus(1);
-
-		UserWechatBind bind = new UserWechatBind();
-		bind.setId(10L);
-		bind.setUserId(99L);
-		bind.setOpenId("openid-5");
-
-		when(weChatClient.code2Session("login-code")).thenReturn(new WeChatSessionResult("openid-5", "union-5"));
-		when(weChatClient.getPhoneNumber("phone-code"))
-			.thenReturn(new WeChatPhoneResult("13800138000", "86"));
-		when(userAccountMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(existing);
-		when(userWechatBindMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(bind);
-		when(jwtService.generateToken(5L, "13800138000")).thenReturn("jwt-token");
-
-		authService.phoneLogin("login-code", "phone-code");
-
-		assertThat(bind.getUserId()).isEqualTo(5L);
-		assertThat(bind.getUnionId()).isEqualTo("union-5");
-		verify(userWechatBindMapper).updateById(bind);
-		verify(userWechatBindMapper, never()).insert(any(UserWechatBind.class));
+		verify(userAccountMapper, never()).insert(any(UserAccount.class));
 	}
 }

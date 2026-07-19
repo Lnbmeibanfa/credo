@@ -1,3 +1,5 @@
+## MODIFIED Requirements
+
 ### Requirement: Welcome page phone authorization
 
 The welcome screen SHALL require authentication before allowing navigation to contract-create.
@@ -55,12 +57,3 @@ After successful login, the mini program SHALL store JWT and enable the「开始
 
 - **WHEN** user has no token
 - **THEN** tapping start contract without completing auth does not navigate to contract-create
-
-### Requirement: Mini program AppID configuration
-
-The mini program project MUST use AppID `wxbda744f66076ee8e` in project configuration for WeChat DevTools and production builds.
-
-#### Scenario: Project config appid
-
-- **WHEN** developer imports project in WeChat DevTools
-- **THEN** project.config.json appid is `wxbda744f66076ee8e`

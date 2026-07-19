@@ -4,7 +4,6 @@ import com.credo.credo_server.common.GlobalExceptionHandler;
 import com.credo.credo_server.dto.auth.PhoneLoginResponse;
 import com.credo.credo_server.dto.auth.UserDto;
 import com.credo.credo_server.service.AuthService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,62 +28,57 @@ class AuthControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	@MockitoBean
 	private AuthService authService;
 
 	@Test
-	@DisplayName("returns success response for valid phone login")
-	void phoneLogin_success_returnsUnifiedResponse() throws Exception {
+	@DisplayName("returns success response for valid wechat login")
+	void wechatLogin_success_returnsUnifiedResponse() throws Exception {
 		PhoneLoginResponse response = new PhoneLoginResponse(
 			"jwt-token",
-			new UserDto(1L, "13800138000", null, null),
+			new UserDto(1L, null, null, null),
 			true
 		);
-		when(authService.phoneLogin("login-code", "phone-code")).thenReturn(response);
+		when(authService.wechatLogin("login-code")).thenReturn(response);
 
-		mockMvc.perform(post("/api/auth/mini/phone-login")
+		mockMvc.perform(post("/api/auth/mini/wechat-login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-					{"loginCode":"login-code","phoneCode":"phone-code"}
+					{"loginCode":"login-code"}
 					"""))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.success").value(true))
 			.andExpect(jsonPath("$.code").value("SUCCESS"))
 			.andExpect(jsonPath("$.data.token").value("jwt-token"))
 			.andExpect(jsonPath("$.data.isNewUser").value(true))
-			.andExpect(jsonPath("$.data.user.phone").value("13800138000"));
+			.andExpect(jsonPath("$.data.user.phone").isEmpty());
 	}
 
 	@Test
 	@DisplayName("returns 400 when loginCode is missing")
-	void phoneLogin_missingLoginCode_returns400() throws Exception {
-		mockMvc.perform(post("/api/auth/mini/phone-login")
+	void wechatLogin_missingLoginCode_returns400() throws Exception {
+		mockMvc.perform(post("/api/auth/mini/wechat-login")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content("""
-					{"phoneCode":"phone-code"}
-					"""))
+				.content("{}"))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.success").value(false))
 			.andExpect(jsonPath("$.code").value("INVALID_PARAMETER"));
 
-		verify(authService, never()).phoneLogin(anyString(), anyString());
+		verify(authService, never()).wechatLogin(anyString());
 	}
 
 	@Test
-	@DisplayName("returns 400 when phoneCode is missing")
-	void phoneLogin_missingPhoneCode_returns400() throws Exception {
-		mockMvc.perform(post("/api/auth/mini/phone-login")
+	@DisplayName("returns 400 when loginCode is blank")
+	void wechatLogin_blankLoginCode_returns400() throws Exception {
+		mockMvc.perform(post("/api/auth/mini/wechat-login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-					{"loginCode":"login-code"}
+					{"loginCode":"  "}
 					"""))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.success").value(false))
 			.andExpect(jsonPath("$.code").value("INVALID_PARAMETER"));
 
-		verify(authService, never()).phoneLogin(anyString(), anyString());
+		verify(authService, never()).wechatLogin(anyString());
 	}
 }

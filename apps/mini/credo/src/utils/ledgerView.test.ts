@@ -10,6 +10,7 @@ import {
   sortDaysForDisplay,
   buildRecordPayload,
   buildPendingQueueQuery,
+  buildLedgerTimelineQuery,
   formatIsoDate,
   type SleepDailyDay,
 } from './ledgerView'
@@ -59,6 +60,17 @@ describe('ledgerView utils', () => {
       status: 'PENDING',
       to: '2026-07-04',
     })
+  })
+
+  it('builds timeline query with explicit today and no status filter', () => {
+    expect(buildLedgerTimelineQuery('2026-07-11')).toEqual({
+      to: '2026-07-11',
+    })
+    expect(buildLedgerTimelineQuery('2026-07-11')).not.toHaveProperty('status')
+  })
+
+  it('identifies breach days as not actionable', () => {
+    expect(isDayActionable('BREACH')).toBe(false)
   })
 
   it('formats ISO date', () => {

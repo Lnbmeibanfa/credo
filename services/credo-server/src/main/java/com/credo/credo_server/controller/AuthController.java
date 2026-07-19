@@ -3,8 +3,8 @@ package com.credo.credo_server.controller;
 import com.credo.credo_server.common.ApiResponse;
 import com.credo.credo_server.common.BusinessException;
 import com.credo.credo_server.common.ErrorCode;
-import com.credo.credo_server.dto.auth.PhoneLoginRequest;
 import com.credo.credo_server.dto.auth.PhoneLoginResponse;
+import com.credo.credo_server.dto.auth.WeChatLoginRequest;
 import com.credo.credo_server.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,16 +21,15 @@ public class AuthController {
 		this.authService = authService;
 	}
 
-	@PostMapping("/phone-login")
-	public ApiResponse<PhoneLoginResponse> phoneLogin(@RequestBody PhoneLoginRequest request) {
-		validateRequiredCodes(request);
-		PhoneLoginResponse response = authService.phoneLogin(request.getLoginCode(), request.getPhoneCode());
+	@PostMapping("/wechat-login")
+	public ApiResponse<PhoneLoginResponse> wechatLogin(@RequestBody WeChatLoginRequest request) {
+		validateLoginCode(request);
+		PhoneLoginResponse response = authService.wechatLogin(request.getLoginCode());
 		return ApiResponse.success(response);
 	}
 
-	private static void validateRequiredCodes(PhoneLoginRequest request) {
-		if (request.getLoginCode() == null || request.getLoginCode().isBlank()
-			|| request.getPhoneCode() == null || request.getPhoneCode().isBlank()) {
+	private static void validateLoginCode(WeChatLoginRequest request) {
+		if (request == null || request.getLoginCode() == null || request.getLoginCode().isBlank()) {
 			throw new BusinessException(ErrorCode.INVALID_PARAMETER);
 		}
 	}

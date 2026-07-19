@@ -20,7 +20,7 @@ import {
   isDayActionable,
   mapDailyStatusToCreditEventType,
   sortDaysForDisplay,
-  buildPendingQueueQuery,
+  buildLedgerTimelineQuery,
   type SleepDailyDay,
   type SleepDailyView,
 } from '@/utils/ledgerView'
@@ -40,7 +40,7 @@ export default function LedgerPage () {
 
     setIsLoading(true)
     try {
-      const data = await getSleepDailyView(buildPendingQueueQuery())
+      const data = await getSleepDailyView(buildLedgerTimelineQuery())
       if (data == null) {
         setNoContract(true)
         setView(null)
@@ -137,7 +137,7 @@ export default function LedgerPage () {
           mode='context'
           monoLabel='LEDGER / 账本'
           title='睡眠账本'
-          subtitle='以下为待登记日期，统计卡片展示契约全貌'
+          subtitle='以下为截至今日的义务记录，统计卡片展示契约全貌'
         />
 
         {summary && (
@@ -164,8 +164,8 @@ export default function LedgerPage () {
         <LedgerTimeline>
           {days.length === 0 ? (
             <View className='sleep-ledger__queue-empty'>
-              <SansText variant='body'>暂无待登记日期</SansText>
-              <SansText variant='caption'>当前没有需要登记的睡眠记录，继续保持。</SansText>
+              <SansText variant='body'>暂无义务日期</SansText>
+              <SansText variant='caption'>契约尚未进入义务期，或今日之前没有需要展示的记录。</SansText>
             </View>
           ) : (
             days.map((day) => (

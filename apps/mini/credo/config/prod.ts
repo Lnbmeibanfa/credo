@@ -1,6 +1,10 @@
 import type { UserConfigExport } from "@tarojs/cli"
 
 export default {
+  defineConstants: {
+    // 上传体验版 / 正式构建固定走 SIT（本地切换只改 config/dev.ts）
+    API_BASE_URL: JSON.stringify('https://www.credo-sit.fun'),
+  },
   mini: {},
   h5: {
     // 确保产物为 es5

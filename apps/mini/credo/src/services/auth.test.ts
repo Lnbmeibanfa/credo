@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
   AUTH_TOKEN_KEY,
-  buildPhoneLoginPayload,
+  buildWeChatLoginPayload,
   getStoredToken,
   parseStoredToken,
   setStoredToken,
@@ -21,12 +21,12 @@ describe('auth service', () => {
     vi.clearAllMocks()
   })
 
-  describe('buildPhoneLoginPayload', () => {
-    it('includes both loginCode and phoneCode', () => {
-      expect(buildPhoneLoginPayload('login-abc', 'phone-xyz')).toEqual({
+  describe('buildWeChatLoginPayload', () => {
+    it('includes loginCode only', () => {
+      expect(buildWeChatLoginPayload('login-abc')).toEqual({
         loginCode: 'login-abc',
-        phoneCode: 'phone-xyz',
       })
+      expect(buildWeChatLoginPayload('login-abc')).not.toHaveProperty('phoneCode')
     })
   })
 

@@ -121,3 +121,9 @@ export function buildPendingQueueQuery (today?: string): Required<Pick<SleepDail
     to: today ?? formatIsoDate(new Date()),
   }
 }
+
+export function buildLedgerTimelineQuery (today?: string): Pick<SleepDailyViewQuery, 'to'> {
+  return {
+    to: today ?? formatIsoDate(new Date()),
+  }
+}

@@ -24,9 +24,7 @@ export default defineConfig<'vite'>(async (merge) => {
     plugins: [
       "@tarojs/plugin-generator"
     ],
-    defineConstants: {
-      API_BASE_URL: JSON.stringify('http://localhost:8080'),
-    },
+    defineConstants: {},
     copy: {
       patterns: [
       ],

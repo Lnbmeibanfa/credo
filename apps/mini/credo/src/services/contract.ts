@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro'
 import { getApiBaseUrl } from '@/constants/api'
 import { buildAuthHeader } from '@/utils/httpAuth'
 import type { SleepContractDto, SleepContractUpsertPayload } from '@/utils/contractForm'
-import { getStoredToken, type ApiResponse } from './auth'
+import { ensureAuthorized, getStoredToken, type ApiResponse } from './auth'
 
 export { buildAuthHeader } from '@/utils/httpAuth'
 
@@ -15,6 +15,7 @@ export async function getMySleepContract (): Promise<SleepContractDto | null> {
   })
 
   const body = response.data
+  ensureAuthorized(response.statusCode, body)
   if (!body.success) {
     throw new Error(body.message || 'Failed to load contract')
   }
@@ -31,6 +32,7 @@ export async function upsertSleepContract (payload: SleepContractUpsertPayload):
   })
 
   const body = response.data
+  ensureAuthorized(response.statusCode, body)
   if (!body.success || !body.data) {
     throw new Error(body.message || 'Failed to save contract')
   }

@@ -12,19 +12,31 @@ import {
   SecondaryButton,
 } from '@/components'
 import { WELCOME_CONTENT } from '@/constants/welcomeContent'
-import { hasStoredToken, phoneLogin } from '@/services/auth'
+import { getMySleepContract } from '@/services/contract'
+import { hasStoredToken, wechatLogin } from '@/services/auth'
 import './index.scss'
 
 export default function Index () {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoggingIn, setIsLoggingIn] = useState(false)
 
-  const refreshAuthState = useCallback(() => {
-    setIsAuthenticated(hasStoredToken())
+  const refreshAuthState = useCallback(async () => {
+    if (!hasStoredToken()) {
+      setIsAuthenticated(false)
+      return
+    }
+
+    try {
+      await getMySleepContract()
+    } catch {
+      // 401 时 ensureAuthorized 会清 token
+    } finally {
+      setIsAuthenticated(hasStoredToken())
+    }
   }, [])
 
   useDidShow(() => {
-    refreshAuthState()
+    void refreshAuthState()
   })
 
   const handleStartContract = () => {
@@ -34,16 +46,14 @@ export default function Index () {
     Taro.navigateTo({ url: '/pages/contract-create/index' })
   }
 
-  const handleGetPhoneNumber = async (event: { detail: { code?: string; errMsg: string } }) => {
-    const phoneCode = event.detail.code
-    if (!phoneCode) {
-      Taro.showToast({ title: '需要授权手机号才能继续', icon: 'none' })
+  const handleWeChatLogin = async () => {
+    if (isLoggingIn) {
       return
     }
 
     setIsLoggingIn(true)
     try {
-      await phoneLogin(phoneCode)
+      await wechatLogin()
       setIsAuthenticated(true)
       Taro.showToast({ title: '登录成功', icon: 'success' })
     } catch {
@@ -92,8 +102,7 @@ export default function Index () {
           ) : (
             <PrimaryButton
               letterSpacing
-              openType='getPhoneNumber'
-              onGetPhoneNumber={handleGetPhoneNumber}
+              onClick={handleWeChatLogin}
             >
               {isLoggingIn ? '登录中…' : WELCOME_CONTENT.authButtonLabel}
             </PrimaryButton>

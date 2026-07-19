@@ -1,21 +1,8 @@
-### Requirement: User account schema extension
-
-The system SHALL apply Flyway migration `V2__extend_user_account_and_wechat_bind.sql` that:
-
-- Adds `country_code VARCHAR(8) NOT NULL DEFAULT '86'` to `user_account`
-- Adds `last_login_at DATETIME NULL` to `user_account`
-- Creates `user_wechat_bind` table with foreign key to `user_account(id)`
-
-The migration MUST NOT modify `V1__init_user_account.sql`.
-
-#### Scenario: Migration applies successfully
-
-- **WHEN** Flyway runs on a database with V1 applied
-- **THEN** `user_account` has new columns and `user_wechat_bind` table exists
+## ADDED Requirements
 
 ### Requirement: Nullable phone on user account
 
-The system SHALL apply a Flyway migration after V4 that changes `user_account.phone` from `NOT NULL` to nullable `VARCHAR(20) NULL`, while retaining the unique key `uk_phone`.
+The system SHALL apply a new Flyway migration (after V4) that changes `user_account.phone` from `NOT NULL` to nullable `VARCHAR(20) NULL`, while retaining the unique key `uk_phone`.
 
 Existing rows with non-null phone MUST remain valid. Multiple users with `phone IS NULL` MUST be allowed.
 
@@ -23,15 +10,6 @@ Existing rows with non-null phone MUST remain valid. Multiple users with `phone 
 
 - **WHEN** Flyway migrates a database that already has V4 applied
 - **THEN** inserting a `user_account` row with `phone = NULL` succeeds
-
-### Requirement: WeChat bind uniqueness
-
-The system SHALL enforce `open_id` uniqueness in `user_wechat_bind` and associate each open_id with exactly one `user_id` for the configured mini program AppID.
-
-#### Scenario: Openid bound to user
-
-- **WHEN** a user logs in with openid "oABC123"
-- **THEN** `user_wechat_bind` contains one row linking that open_id to the user's id
 
 ### Requirement: Mini program WeChat login API
 
@@ -87,11 +65,44 @@ WeChat credentials MUST come from `WECHAT_MINI_APP_ID` and `WECHAT_MINI_APP_SECR
 - **WHEN** WeChat returns an error for expired or invalid loginCode
 - **THEN** API returns 400 with stable WeChat auth error code and creates no user
 
+### Requirement: Login response allows null phone
+
+Successful wechat-login data MUST include: `token`, `user` (id, phone, nickname, avatarUrl), `isNewUser`.
+
+`user.phone` MAY be null. JWT MUST use user id as subject; phone claim MAY be omitted or null.
+
+#### Scenario: Success with null phone
+
+- **WHEN** a new wechat-login user is created
+- **THEN** response success payload includes token and user with null phone
+
+## REMOVED Requirements
+
+### Requirement: Mini program phone login API
+
+**Reason**: Personal-subject mini programs cannot use getPhoneNumber on real devices; login identity moves to openid.
+
+**Migration**: Clients MUST call `POST /api/auth/mini/wechat-login` with `loginCode` only.
+
+### Requirement: Phone login registers new user
+
+**Reason**: Replaced by WeChat login registers new user by openid.
+
+**Migration**: Use wechat-login new-user behavior.
+
+### Requirement: Phone login for existing user
+
+**Reason**: Replaced by WeChat login for existing bound user.
+
+**Migration**: Use wechat-login returning-user behavior.
+
+## MODIFIED Requirements
+
 ### Requirement: WeChat API integration
 
 The system SHALL call WeChat `code2Session` with loginCode during wechat-login to obtain openid (and unionid if present).
 
-WeChat credentials MUST come from environment variables `WECHAT_MINI_APP_ID` and `WECHAT_MINI_APP_SECRET`. AppID for this project is `wxbda744f66076ee8e`.
+WeChat credentials MUST come from environment variables `WECHAT_MINI_APP_ID` and `WECHAT_MINI_APP_SECRET`.
 
 Login MUST NOT depend on WeChat `getPhoneNumber`.
 
@@ -110,23 +121,3 @@ Successful wechat-login data MUST include: `token`, `user` (id, phone, nickname,
 
 - **WHEN** wechat-login succeeds
 - **THEN** response matches unified success format with token in data
-
-### Requirement: Login response allows null phone
-
-Successful wechat-login data MUST include: `token`, `user` (id, phone, nickname, avatarUrl), `isNewUser`.
-
-`user.phone` MAY be null. JWT MUST use user id as subject; phone claim MAY be omitted or null.
-
-#### Scenario: Success with null phone
-
-- **WHEN** a new wechat-login user is created
-- **THEN** response success payload includes token and user with null phone
-
-### Requirement: JWT issuance
-
-The system SHALL issue JWT on successful login containing user id as subject, valid for configured expire-hours.
-
-#### Scenario: Token contains user identity
-
-- **WHEN** login succeeds for user id 42
-- **THEN** returned JWT can be validated and resolves to user id 42

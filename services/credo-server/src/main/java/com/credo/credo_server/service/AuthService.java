@@ -2,7 +2,6 @@ package com.credo.credo_server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.credo.credo_server.client.WeChatClient;
-import com.credo.credo_server.client.WeChatPhoneResult;
 import com.credo.credo_server.client.WeChatSessionResult;
 import com.credo.credo_server.common.BusinessException;
 import com.credo.credo_server.common.ErrorCode;
@@ -44,60 +43,61 @@ public class AuthService {
 	}
 
 	@Transactional
-	public PhoneLoginResponse phoneLogin(String loginCode, String phoneCode) {
+	public PhoneLoginResponse wechatLogin(String loginCode) {
 		WeChatSessionResult session = weChatClient.code2Session(loginCode);
-		WeChatPhoneResult phone = weChatClient.getPhoneNumber(phoneCode);
+		String openId = session.openId();
 
-		UserAccount user = userAccountMapper.selectOne(
-			new LambdaQueryWrapper<UserAccount>().eq(UserAccount::getPhone, phone.purePhoneNumber())
+		UserWechatBind bind = userWechatBindMapper.selectOne(
+			new LambdaQueryWrapper<UserWechatBind>().eq(UserWechatBind::getOpenId, openId)
 		);
 
 		boolean isNewUser = false;
-		if (user == null) {
-			user = createUser(phone.purePhoneNumber(), phone.countryCode());
+		UserAccount user;
+
+		if (bind == null) {
+			user = createUserWithoutPhone();
 			isNewUser = true;
-		} else if (user.getStatus() == null || user.getStatus() != STATUS_ACTIVE) {
-			throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+			insertWechatBind(user.getId(), openId, session.unionId());
 		} else {
+			user = userAccountMapper.selectById(bind.getUserId());
+			if (user == null) {
+				throw new BusinessException(ErrorCode.INTERNAL_ERROR, "WeChat bind references missing user");
+			}
+			if (user.getStatus() == null || user.getStatus() != STATUS_ACTIVE) {
+				throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+			}
 			user.setLastLoginAt(LocalDateTime.now());
 			userAccountMapper.updateById(user);
+			updateWechatBind(bind, session.unionId());
 		}
-
-		upsertWechatBind(user.getId(), session.openId(), session.unionId());
 
 		String token = jwtService.generateToken(user.getId(), user.getPhone());
 		UserDto userDto = new UserDto(user.getId(), user.getPhone(), user.getNickname(), user.getAvatarUrl());
 		return new PhoneLoginResponse(token, userDto, isNewUser);
 	}
 
-	private UserAccount createUser(String phone, String countryCode) {
+	private UserAccount createUserWithoutPhone() {
 		UserAccount user = new UserAccount();
-		user.setPhone(phone);
-		user.setCountryCode(countryCode);
+		user.setPhone(null);
+		user.setCountryCode("86");
 		user.setStatus(STATUS_ACTIVE);
 		user.setLastLoginAt(LocalDateTime.now());
 		userAccountMapper.insert(user);
 		return user;
 	}
 
-	private void upsertWechatBind(Long userId, String openId, String unionId) {
-		UserWechatBind existing = userWechatBindMapper.selectOne(
-			new LambdaQueryWrapper<UserWechatBind>().eq(UserWechatBind::getOpenId, openId)
-		);
+	private void insertWechatBind(Long userId, String openId, String unionId) {
+		UserWechatBind bind = new UserWechatBind();
+		bind.setUserId(userId);
+		bind.setAppId(weChatProperties.getMiniAppId());
+		bind.setOpenId(openId);
+		bind.setUnionId(unionId);
+		userWechatBindMapper.insert(bind);
+	}
 
-		if (existing == null) {
-			UserWechatBind bind = new UserWechatBind();
-			bind.setUserId(userId);
-			bind.setAppId(weChatProperties.getMiniAppId());
-			bind.setOpenId(openId);
-			bind.setUnionId(unionId);
-			userWechatBindMapper.insert(bind);
-			return;
-		}
-
-		existing.setUserId(userId);
-		existing.setAppId(weChatProperties.getMiniAppId());
-		existing.setUnionId(unionId);
-		userWechatBindMapper.updateById(existing);
+	private void updateWechatBind(UserWechatBind bind, String unionId) {
+		bind.setAppId(weChatProperties.getMiniAppId());
+		bind.setUnionId(unionId);
+		userWechatBindMapper.updateById(bind);
 	}
 }

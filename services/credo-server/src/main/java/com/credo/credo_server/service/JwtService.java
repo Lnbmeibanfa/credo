@@ -27,13 +27,17 @@ public class JwtService {
 		Instant now = Instant.now();
 		Instant expiry = now.plus(jwtProperties.getExpireHours(), ChronoUnit.HOURS);
 
-		return Jwts.builder()
+		var builder = Jwts.builder()
 			.subject(String.valueOf(userId))
-			.claim("phone", phone)
 			.issuedAt(Date.from(now))
 			.expiration(Date.from(expiry))
-			.signWith(secretKey)
-			.compact();
+			.signWith(secretKey);
+
+		if (phone != null && !phone.isBlank()) {
+			builder.claim("phone", phone);
+		}
+
+		return builder.compact();
 	}
 
 	public Long parseUserId(String token) {

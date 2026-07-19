@@ -10,7 +10,6 @@ import {
   BreachClauseSelector,
   SleepContractDocument,
   PrimaryButton,
-  SecondaryButton,
   SansText,
 } from '@/components'
 import { hasStoredToken } from '@/services/auth'
@@ -82,6 +81,9 @@ export default function ContractCreate () {
       setSignedAt(saved.signedAt)
       setIsSigned(true)
       Taro.showToast({ title: '签约成功', icon: 'success' })
+      setTimeout(() => {
+        Taro.redirectTo({ url: '/pages/ledger/index' })
+      }, 500)
     } catch {
       Taro.showToast({ title: '签约失败，请重试', icon: 'none' })
     } finally {
@@ -150,15 +152,6 @@ export default function ContractCreate () {
         >
           {isSubmitting ? '提交中…' : isSigned ? '确认修改并重新签约' : '确认签约'}
         </PrimaryButton>
-
-        {isSigned && (
-          <SecondaryButton
-            className='contract-create__ledger-link'
-            onClick={() => Taro.navigateTo({ url: '/pages/ledger/index' })}
-          >
-            去睡眠账本登记 →
-          </SecondaryButton>
-        )}
       </View>
     </PageShell>
   )

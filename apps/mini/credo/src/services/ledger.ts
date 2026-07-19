@@ -7,7 +7,7 @@ import type {
   SleepLedgerSummary,
   SleepRecordPayload,
 } from '@/utils/ledgerView'
-import { getStoredToken, type ApiResponse } from './auth'
+import { ensureAuthorized, getStoredToken, type ApiResponse } from './auth'
 
 export { buildRecordPayload } from '@/utils/ledgerView'
 
@@ -21,6 +21,7 @@ export async function recordSleepDay (payload: SleepRecordPayload): Promise<Slee
   })
 
   const body = response.data
+  ensureAuthorized(response.statusCode, body)
   if (!body.success || !body.data) {
     throw new Error(body.message || 'Failed to record sleep day')
   }
@@ -41,6 +42,7 @@ export async function getSleepDailyView (params?: {
   })
 
   const body = response.data
+  ensureAuthorized(response.statusCode, body)
   if (!body.success) {
     if (body.code === 'NO_CONTRACT') {
       return null
@@ -59,6 +61,7 @@ export async function getSleepLedgerSummary (): Promise<SleepLedgerSummary> {
   })
 
   const body = response.data
+  ensureAuthorized(response.statusCode, body)
   if (!body.success || !body.data) {
     throw new Error(body.message || 'Failed to load ledger summary')
   }

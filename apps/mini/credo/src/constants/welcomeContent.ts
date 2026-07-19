@@ -10,7 +10,7 @@ export const WELCOME_CONTENT = {
     '本产品是个人契约与信用管理系统。',
   ],
   hintText: '建立属于自己的信用账户。',
-  authButtonLabel: '授权手机号登录',
+  authButtonLabel: '微信登录',
   authHintText: '登录后即可开始立约。',
   ctaLabel: '开始立约 →',
   footerLabel: 'FIRST CONTRACT · 睡眠',

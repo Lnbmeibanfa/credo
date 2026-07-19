@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildAuthHeader } from './httpAuth'
+import { buildAuthHeader, isUnauthorizedResponse } from './httpAuth'
 
 describe('httpAuth utils', () => {
   describe('buildAuthHeader', () => {
@@ -14,6 +14,20 @@ describe('httpAuth utils', () => {
       expect(buildAuthHeader(null)).toEqual({
         'Content-Type': 'application/json',
       })
+    })
+  })
+
+  describe('isUnauthorizedResponse', () => {
+    it('returns true for HTTP 401', () => {
+      expect(isUnauthorizedResponse(401, { code: 'UNAUTHORIZED' })).toBe(true)
+    })
+
+    it('returns true for UNAUTHORIZED code even when status is 200', () => {
+      expect(isUnauthorizedResponse(200, { code: 'UNAUTHORIZED' })).toBe(true)
+    })
+
+    it('returns false for other errors', () => {
+      expect(isUnauthorizedResponse(400, { code: 'INVALID_PARAMETER' })).toBe(false)
     })
   })
 })
