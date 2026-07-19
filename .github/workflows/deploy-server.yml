@@ -1,0 +1,150 @@
+name: Deploy Credo Server
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'services/credo-server/**'
+      - '.github/workflows/deploy-server.yml'
+  pull_request:
+    branches: [master, main]
+    paths:
+      - 'services/credo-server/**'
+      - '.github/workflows/deploy-server.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run tests
+        run: mvn -B test -f services/credo-server/pom.xml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    environment:
+      name: production
+      url: https://www.credo-sit.fun
+    env:
+      ECS_PORT: ${{ secrets.ECS_PORT || '22' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build JAR (with tests)
+        run: |
+          mvn -B clean package -f services/credo-server/pom.xml
+          test -f services/credo-server/target/credo-server.jar
+          ls -lh services/credo-server/target/credo-server.jar
+
+      - name: Upload JAR to ECS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ env.ECS_PORT }}
+          source: services/credo-server/target/credo-server.jar
+          target: /tmp/credo-deploy/
+          strip_components: 3
+          overwrite: true
+
+      - name: Deploy and Restart Service
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ env.ECS_PORT }}
+          script: |
+            set -e
+
+            echo "========================================="
+            echo "Starting deployment at $(date)"
+            echo "========================================="
+
+            if [ ! -f /tmp/credo-deploy/credo-server.jar ]; then
+              echo "ERROR: JAR file not found at /tmp/credo-deploy/credo-server.jar"
+              exit 1
+            fi
+
+            echo "New JAR file:"
+            ls -lh /tmp/credo-deploy/credo-server.jar
+
+            if [ -f /opt/credo/credo-server.jar ]; then
+              BACKUP_NAME="/opt/credo/credo-server.jar.bak.$(date +%Y%m%d_%H%M%S)"
+              echo "Backing up to: $BACKUP_NAME"
+              sudo cp /opt/credo/credo-server.jar "$BACKUP_NAME"
+            else
+              echo "No existing JAR to backup (first deploy)"
+            fi
+
+            echo "Deploying new JAR..."
+            sudo mv /tmp/credo-deploy/credo-server.jar /opt/credo/credo-server.jar
+            sudo chown credo:credo /opt/credo/credo-server.jar
+            sudo chmod 755 /opt/credo/credo-server.jar
+
+            echo "Deployed JAR:"
+            ls -lh /opt/credo/credo-server.jar
+
+            echo "Restarting service..."
+            sudo systemctl restart credo-server
+
+            echo "Waiting for service to start..."
+            sleep 15
+
+            echo "Service Status"
+            sudo systemctl status credo-server --no-pager || true
+
+            if ! sudo systemctl is-active --quiet credo-server; then
+              echo "ERROR: credo-server is not active"
+              sudo journalctl -u credo-server -n 50 --no-pager || true
+              exit 1
+            fi
+
+            echo "Recent Logs"
+            sudo journalctl -u credo-server -n 30 --no-pager || true
+
+            echo "Health Check (expect 401 Unauthorized without token)"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://localhost:8080/api/contracts/sleep/mine || echo "000")
+            echo "HTTP Status: $HTTP_CODE"
+
+            if [ "$HTTP_CODE" != "401" ] && [ "$HTTP_CODE" != "200" ]; then
+              echo "ERROR: unexpected health check status $HTTP_CODE"
+              exit 1
+            fi
+
+            echo "Deployment completed at $(date)"
+
+      - name: Cleanup
+        if: always()
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ env.ECS_PORT }}
+          script: |
+            sudo rm -rf /tmp/credo-deploy
+            cd /opt/credo && ls -t credo-server.jar.bak.* 2>/dev/null | tail -n +6 | xargs rm -f 2>/dev/null || true
+            echo "Cleanup completed"
